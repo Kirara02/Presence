@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "142610580331",
+    "project_id": "presence-116be",
+    "storage_bucket": "presence-116be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142610580331:android:6984deca1575c94566c22e",
+        "android_client_info": {
+          "package_name": "com.kirara.presence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142610580331-m1jp7fbu3ap6iilesf61jk0hp7f0ddqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTalbdVmQVMwiFTptQJ6tCUb16QxVkIIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142610580331-m1jp7fbu3ap6iilesf61jk0hp7f0ddqu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "142610580331-aj5kgv61c8s74eoipbkmb7aka96j7okq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "httpskirara02.github.iomy-portfolio.presence"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142610580331:android:bc570df921bb1b9066c22e",
+        "android_client_info": {
+          "package_name": "httpskirara02.github.iomyportfolio.presence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142610580331-uu0cd80l0che2nk1b85jnpk046eave5g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "httpskirara02.github.iomyportfolio.presence",
+            "certificate_hash": "e9966ae49aec1d29e56ddf3ed1a39d514a3d3118"
+          }
+        },
+        {
+          "client_id": "142610580331-m1jp7fbu3ap6iilesf61jk0hp7f0ddqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTalbdVmQVMwiFTptQJ6tCUb16QxVkIIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142610580331-m1jp7fbu3ap6iilesf61jk0hp7f0ddqu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "142610580331-aj5kgv61c8s74eoipbkmb7aka96j7okq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "httpskirara02.github.iomy-portfolio.presence"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

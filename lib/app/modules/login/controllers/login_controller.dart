@@ -4,13 +4,15 @@ import 'package:get/get.dart';
 import 'package:presence/app/routes/app_pages.dart';
 
 class LoginController extends GetxController {
+  RxBool isLoading = false.obs;
   TextEditingController emailC = TextEditingController(text: "");
   TextEditingController passC = TextEditingController(text: "");
 
   FirebaseAuth authentication = FirebaseAuth.instance;
 
-  void login() async {
+  Future<void> login() async {
     if (emailC.text.isNotEmpty && passC.text.isNotEmpty) {
+      isLoading.value = true;
       try {
         UserCredential credential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -20,6 +22,7 @@ class LoginController extends GetxController {
         print(credential);
         if (credential.user != null) {
           if (credential.user!.emailVerified == true) {
+            isLoading.value = false;
             if (passC.text == 'password') {
               Get.offAllNamed(Routes.NEW_PASSWORD);
             } else {
@@ -32,7 +35,10 @@ class LoginController extends GetxController {
                   "Kamu belum verifikasi email ini!. Lakukan verifikasi diemail kamu",
               actions: [
                 OutlinedButton(
-                  onPressed: () => Get.back(),
+                  onPressed: () {
+                    isLoading.value = false;
+                    Get.back();
+                  },
                   child: const Text("CANCEL"),
                 ),
                 ElevatedButton(
@@ -44,11 +50,13 @@ class LoginController extends GetxController {
                         "Berhasil",
                         "Kami telah berhasil mengirim verifikasi email ke akun kamu!",
                       );
+                      isLoading.value = false;
                     } catch (e) {
                       Get.snackbar(
                         "Terjadi Kesalahan",
                         "Tidak dapat mengirim email verifikasi. Hubungi admin atau CS",
                       );
+                      isLoading.value = false;
                     }
                   },
                   child: const Text("KIRIM ULANG"),
@@ -57,7 +65,9 @@ class LoginController extends GetxController {
             );
           }
         }
+        isLoading.value = false;
       } on FirebaseAuthException catch (e) {
+        isLoading.value = false;
         print(e.code);
         if (e.code == 'user-not-found') {
           Get.snackbar("Terjadi Kesalahan", "Email tidak terdaftar");
@@ -67,6 +77,7 @@ class LoginController extends GetxController {
           Get.snackbar("Terjadi Kesalahan", "Password salah");
         }
       } catch (e) {
+        isLoading.value = false;
         Get.snackbar("Terjadi Kesalahan", "Tidak dapat login.");
       }
     } else {
@@ -76,6 +87,4 @@ class LoginController extends GetxController {
       );
     }
   }
-
-  void forgotPassword() {}
 }

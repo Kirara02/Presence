@@ -9,6 +9,8 @@ class DetailPresensiView extends GetView<DetailPresensiController> {
   const DetailPresensiView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> data = Get.arguments;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Presensi'),
@@ -28,7 +30,8 @@ class DetailPresensiView extends GetView<DetailPresensiController> {
               children: [
                 Center(
                   child: Text(
-                    DateFormat.yMMMMEEEEd().format(DateTime.now()),
+                    DateFormat.yMMMMEEEEd()
+                        .format(DateTime.parse(data['date'])),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -45,13 +48,19 @@ class DetailPresensiView extends GetView<DetailPresensiController> {
                   ),
                 ),
                 Text(
-                  "Jam :${DateFormat.jms().format(DateTime.now())}",
-                ),
-                const Text(
-                  "Posisi : -6.3262865, 187.781926",
+                  "Jam :${DateFormat.jms().format(DateTime.parse(data['masuk']!['date']))}",
                 ),
                 Text(
-                  "Status: Di dalam area",
+                  "Posisi: ${data['masuk']!['lat']}, ${data['masuk']!['long']}",
+                ),
+                Text(
+                  'Status: ${data['masuk']!['status']}',
+                ),
+                Text(
+                  'Address: ${data['masuk']!['address']}',
+                ),
+                Text(
+                  'Jarak: ${data['masuk']!['distance'].toString().split('.').first} Meter',
                 ),
                 const SizedBox(
                   height: 20,
@@ -63,13 +72,30 @@ class DetailPresensiView extends GetView<DetailPresensiController> {
                   ),
                 ),
                 Text(
-                  "Jam :${DateFormat.jms().format(DateTime.now())}",
+                  data['keluar']?['date'] == null
+                      ? "Jam: -"
+                      : "Jam: ${DateFormat.jms().format(DateTime.parse(data['keluar']['date']))}",
                 ),
                 Text(
-                  "Posisi : -6.3262865, 187.781926",
+                  data['keluar']?['lat'] == null &&
+                          data['keluar']?['long'] == null
+                      ? "Posisi: -"
+                      : "Posisi: ${data['keluar']!['lat']}, ${data['keluar']!['long']}",
                 ),
                 Text(
-                  "Status: Di dalam area",
+                  data['keluar']?['status'] == null
+                      ? "Status: -"
+                      : "Status: ${data['keluar']['status']}",
+                ),
+                Text(
+                  data['keluar']?['address'] == null
+                      ? "Address: -"
+                      : 'Address: ${data['keluar']?['address']}',
+                ),
+                Text(
+                  data['keluar']?['distance'] == null
+                      ? "Jarak: -"
+                      : 'Jarak: ${data['keluar']?['distance'].toString().split('.').first} Meter',
                 ),
               ],
             ),

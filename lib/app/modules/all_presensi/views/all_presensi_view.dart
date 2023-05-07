@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:presence/app/routes/app_pages.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../controllers/all_presensi_controller.dart';
 
@@ -15,41 +17,39 @@ class AllPresensiView extends GetView<AllPresensiController> {
         title: const Text('All Presensi'),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 4,
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Search...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(
-                right: 20,
-                left: 20,
-                bottom: 20,
-              ),
-              itemCount: 10,
+      body: GetBuilder<AllPresensiController>(
+        builder: (c) => FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          future: controller.getAllPresence(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.data!.docs.isEmpty || snapshot.data == null) {
+              return const Center(
+                child: Text("Belum ada history presensi"),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(20),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index) {
+                Map<String, dynamic> data = snapshot.data!.docs[index].data();
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Material(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
                     child: InkWell(
-                      onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI),
+                      onTap: () => Get.toNamed(
+                        Routes.DETAIL_PRESENSI,
+                        arguments: data,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.all(20),
@@ -69,7 +69,9 @@ class AllPresensiView extends GetView<AllPresensiController> {
                                   ),
                                 ),
                                 Text(
-                                  DateFormat.yMMMEd().format(DateTime.now()),
+                                  DateFormat.yMMMEd().format(
+                                    DateTime.parse(data["date"]),
+                                  ),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -77,7 +79,13 @@ class AllPresensiView extends GetView<AllPresensiController> {
                               ],
                             ),
                             Text(
-                              DateFormat.jms().format(DateTime.now()),
+                              data['masuk']?['date'] == null
+                                  ? "-"
+                                  : DateFormat.jms().format(
+                                      DateTime.parse(
+                                        data['masuk']!['date'],
+                                      ),
+                                    ),
                             ),
                             const SizedBox(
                               height: 10,
@@ -89,7 +97,13 @@ class AllPresensiView extends GetView<AllPresensiController> {
                               ),
                             ),
                             Text(
-                              DateFormat.jms().format(DateTime.now()),
+                              data['keluar']?['date'] == null
+                                  ? "-"
+                                  : DateFormat.jms().format(
+                                      DateTime.parse(
+                                        data['keluar']!['date'],
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
@@ -98,9 +112,36 @@ class AllPresensiView extends GetView<AllPresensiController> {
                   ),
                 );
               },
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.dialog(
+            Dialog(
+              child: Container(
+                height: 400,
+                padding: const EdgeInsets.all(20),
+                child: SfDateRangePicker(
+                  monthViewSettings: const DateRangePickerMonthViewSettings(
+                    firstDayOfWeek: 1,
+                  ),
+                  showActionButtons: true,
+                  selectionMode: DateRangePickerSelectionMode.range,
+                  onCancel: () => Get.back(),
+                  onSubmit: (obj) {
+                    if (obj != null &&
+                        (obj as PickerDateRange).endDate != null) {
+                      controller.pickDate(obj.startDate!, obj.endDate!);
+                    }
+                  },
+                ),
+              ),
             ),
-          ),
-        ],
+          );
+        },
+        child: const Icon(Icons.format_list_bulleted_rounded),
       ),
     );
   }

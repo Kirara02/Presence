@@ -12,7 +12,6 @@ class ProfileView extends GetView<ProfileController> {
   const ProfileView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    
     final pageC = Get.find<PageIndexController>();
 
     return Scaffold(
@@ -112,7 +111,7 @@ class ProfileView extends GetView<ProfileController> {
       ),
       bottomNavigationBar: ConvexAppBar(
         style: TabStyle.fixedCircle,
-        items: [
+        items: const [
           TabItem(icon: Icons.home, title: 'Home'),
           TabItem(icon: Icons.fingerprint, title: 'Add'),
           TabItem(icon: Icons.person, title: 'Profile'),

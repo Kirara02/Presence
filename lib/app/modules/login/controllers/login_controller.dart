@@ -68,7 +68,6 @@ class LoginController extends GetxController {
         isLoading.value = false;
       } on FirebaseAuthException catch (e) {
         isLoading.value = false;
-        print(e.code);
         if (e.code == 'user-not-found') {
           Get.snackbar("Terjadi Kesalahan", "Email tidak terdaftar");
         } else if (e.code == 'invalid-email') {

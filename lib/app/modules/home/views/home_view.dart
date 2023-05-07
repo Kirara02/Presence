@@ -123,28 +123,56 @@ class HomeView extends GetView<HomeController> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.grey[200],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: const [
-                          Text('Masuk'),
-                          Text('-'),
-                        ],
-                      ),
-                      Container(
-                        height: 40,
-                        width: 2,
-                        color: Colors.grey,
-                      ),
-                      Column(
-                        children: const [
-                          Text('Keluar'),
-                          Text('-'),
-                        ],
-                      )
-                    ],
-                  ),
+                  child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      stream: controller.streamTodayPresence(),
+                      builder: (context, snapToday) {
+                        if (snapToday.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        var dataToday = snapToday.data?.data();
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                const Text('Masuk'),
+                                Text(
+                                  dataToday?['masuk'] == null
+                                      ? "-"
+                                      : DateFormat.jms().format(
+                                          DateTime.parse(
+                                            dataToday!['masuk']['date'],
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 40,
+                              width: 2,
+                              color: Colors.grey,
+                            ),
+                            Column(
+                              children: [
+                                const Text('Keluar'),
+                                Text(
+                                  dataToday?['keluar'] == null
+                                      ? "-"
+                                      : DateFormat.jms().format(
+                                          DateTime.parse(
+                                            dataToday!['keluar']['date'],
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            )
+                          ],
+                        );
+                      }),
                 ),
                 const SizedBox(
                   height: 20,
@@ -175,69 +203,109 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Material(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(20),
-                        child: InkWell(
-                          onTap: () => Get.toNamed(Routes.DETAIL_PRESENSI),
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
+                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: controller.streamLastPresence(),
+                    builder: (context, snapPresence) {
+                      if (snapPresence.connectionState ==
+                          ConnectionState.waiting) {
+                        return const SizedBox(
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      if (snapPresence.data!.docs.isEmpty ||
+                          snapPresence.data == null) {
+                        return const Center(
+                          child: Text("Belum ada history presensi"),
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapPresence.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> data =
+                              snapPresence.data!.docs[index].data();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Material(
+                              color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      "Masuk",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                              child: InkWell(
+                                onTap: () => Get.toNamed(
+                                  Routes.DETAIL_PRESENSI,
+                                  arguments: data,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            "Masuk",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            DateFormat.yMMMEd().format(
+                                              DateTime.parse(data["date"]),
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    Text(
-                                      DateFormat.yMMMEd()
-                                          .format(DateTime.now()),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                      Text(
+                                        data['masuk']?['date'] == null
+                                            ? "-"
+                                            : DateFormat.jms().format(
+                                                DateTime.parse(
+                                                  data['masuk']!['date'],
+                                                ),
+                                              ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  DateFormat.jms().format(DateTime.now()),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text(
-                                  "Keluar",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      const Text(
+                                        "Keluar",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        data['keluar']?['date'] == null
+                                            ? "-"
+                                            : DateFormat.jms().format(
+                                                DateTime.parse(
+                                                  data['keluar']!['date'],
+                                                ),
+                                              ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                  DateFormat.jms().format(DateTime.now()),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                          );
+                        },
+                      );
+                    }),
               ],
             );
           } else {
